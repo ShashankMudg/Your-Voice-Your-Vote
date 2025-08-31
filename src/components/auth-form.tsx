@@ -13,8 +13,8 @@ export default function AuthForm() {
         <CardTitle>Portal Access</CardTitle>
         <CardDescription>Enter your Aadhar number to receive an OTP.</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow flex flex-col justify-center">
-        <div className="flex-grow flex flex-col justify-center">
+      <CardContent className="flex-grow flex flex-col items-center justify-center">
+        <div className="w-full max-w-sm">
           <form className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="aadhar-login">Aadhar Number</Label>
