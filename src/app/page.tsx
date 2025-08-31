@@ -19,11 +19,11 @@ export default function Home() {
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 items-start">
-          <div className="md:col-span-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <ElectionSchedule />
-          </div>
-          <div className="md:col-span-1 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <div className="md:col-span-2 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <AuthForm />
+          </div>
+          <div className="md:col-span-1 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <ElectionSchedule />
           </div>
         </div>
 
