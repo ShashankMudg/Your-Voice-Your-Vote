@@ -8,12 +8,12 @@ import { Send } from "lucide-react";
 
 export default function AuthForm() {
   return (
-    <Card className="w-full">
+    <Card className="w-full flex flex-col h-full">
       <CardHeader>
         <CardTitle>Portal Access</CardTitle>
         <CardDescription>Enter your Aadhar number to receive an OTP.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-grow flex flex-col justify-center">
         <form className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="aadhar-login">Aadhar Number</Label>
