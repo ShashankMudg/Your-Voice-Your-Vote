@@ -18,14 +18,17 @@ export default function Home() {
           </p>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <div className="lg:col-span-1 space-y-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 items-start">
+          <div className="md:col-span-1 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <AuthForm />
-            <VotingInstructions />
           </div>
-          <div className="lg:col-span-2 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <div className="md:col-span-2 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <ElectionSchedule />
           </div>
+        </div>
+
+        <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <VotingInstructions />
         </div>
       </main>
       <Footer />
