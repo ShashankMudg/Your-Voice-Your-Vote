@@ -14,16 +14,18 @@ export default function AuthForm() {
         <CardDescription>Enter your Aadhar number to receive an OTP.</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-center">
-        <form className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="aadhar-login">Aadhar Number</Label>
-            <Input id="aadhar-login" placeholder="xxxx xxxx xxxx" required />
-          </div>
-          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Send className="mr-2 h-4 w-4"/>
-            Send OTP
-          </Button>
-        </form>
+        <div className="flex-grow flex flex-col justify-center">
+          <form className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="aadhar-login">Aadhar Number</Label>
+              <Input id="aadhar-login" placeholder="xxxx xxxx xxxx" required />
+            </div>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Send className="mr-2 h-4 w-4"/>
+              Send OTP
+            </Button>
+          </form>
+        </div>
       </CardContent>
     </Card>
   );
