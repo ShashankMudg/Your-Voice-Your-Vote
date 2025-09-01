@@ -2,8 +2,8 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter } from '@/components/ui/alert-dialog';
 import Image from 'next/image';
 
 const parties = [
@@ -61,6 +61,7 @@ export default function DashboardPage() {
                         width={40}
                         height={40}
                         data-ai-hint={party.symbolHint}
+                        className="rounded-full"
                       />
                       <AvatarFallback>{party.name.charAt(0)}</AvatarFallback>
                     </Avatar>
