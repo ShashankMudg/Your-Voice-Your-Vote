@@ -34,6 +34,11 @@ const parties = [
     candidate: 'Mamata Banerjee',
     initials: 'MB',
   },
+  {
+    name: 'None of the Above',
+    candidate: 'NOTA',
+    initials: 'NOTA',
+  },
 ];
 
 export default function DashboardPage() {
