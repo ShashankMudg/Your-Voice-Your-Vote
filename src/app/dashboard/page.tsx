@@ -10,31 +10,31 @@ const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    symbol: 'https://picsum.photos/40/40?random=1',
+    symbol: '/lotus.svg',
     symbolHint: 'lotus flower',
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    symbol: 'https://picsum.photos/40/40?random=2',
+    symbol: '/hand.svg',
     symbolHint: 'hand symbol',
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    symbol: 'https://picsum.photos/40/40?random=3',
+    symbol: '/broom.svg',
     symbolHint: 'broom',
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    symbol: 'https://picsum.photos/40/40?random=4',
+    symbol: '/elephant.svg',
     symbolHint: 'elephant',
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    symbol: 'https://picsum.photos/40/40?random=5',
+    symbol: '/flowers.svg',
     symbolHint: 'flowers grass',
   },
 ];
@@ -55,14 +55,14 @@ export default function DashboardPage() {
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
-                      <Image 
-                        src={party.symbol} 
-                        alt={`${party.name} symbol`}
-                        width={40}
-                        height={40}
-                        data-ai-hint={party.symbolHint}
-                        className="rounded-full"
-                      />
+                      <div className="relative h-10 w-10">
+                        <Image 
+                          src={party.symbol} 
+                          alt={`${party.name} symbol`}
+                          fill
+                          data-ai-hint={party.symbolHint}
+                        />
+                      </div>
                       <AvatarFallback>{party.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
