@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,17 @@ export default function AuthForm() {
     // For demonstration, using a hardcoded OTP.
     // In a real app, you would verify this against a server.
     if (otp === '123456') {
+      // Check if the user has already voted.
+      const hasVoted = localStorage.getItem(aadhar) === 'voted';
+
+      if (hasVoted) {
+        router.push('/already-voted');
+        return;
+      }
+      
+      // Store the current user's aadhar to mark as voted later
+      localStorage.setItem('currentVoterAadhar', aadhar);
+
       toast({
         title: "Success",
         description: "OTP validated successfully. Redirecting...",
@@ -45,6 +56,11 @@ export default function AuthForm() {
       });
     }
   };
+
+  // Effect to handle client-side only logic
+  useEffect(() => {
+    // This code will only run on the client.
+  }, []);
 
   return (
     <>

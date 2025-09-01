@@ -40,7 +40,11 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const handleVote = () => {
-    // In a real app, you would record the vote here.
+    // Mark the user as voted in localStorage.
+    const aadhar = localStorage.getItem('currentVoterAadhar');
+    if (aadhar) {
+      localStorage.setItem(aadhar, 'voted');
+    }
     router.push('/thank-you');
   };
 
