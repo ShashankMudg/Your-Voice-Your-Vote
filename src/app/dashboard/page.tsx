@@ -55,15 +55,13 @@ export default function DashboardPage() {
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
-                      <div className="relative w-full h-full">
-                        <Image 
-                          src={party.logoUrl} 
-                          alt={`${party.name} logo`} 
-                          fill 
-                          className="object-contain"
-                          data-ai-hint={party.hint}
-                        />
-                      </div>
+                      <Image 
+                        src={party.logoUrl} 
+                        alt={`${party.name} logo`} 
+                        width={48}
+                        height={48}
+                        data-ai-hint={party.hint}
+                      />
                     </Avatar>
                     <div>
                       <h3 className="font-semibold text-lg">{party.name}</h3>
