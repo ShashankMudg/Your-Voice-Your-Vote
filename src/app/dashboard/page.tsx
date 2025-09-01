@@ -4,38 +4,32 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
-import Image from 'next/image';
 
 const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    imageUrl: 'https://picsum.photos/48/48?random=1',
-    hint: 'Narendra Modi',
+    initials: 'NM',
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    imageUrl: 'https://picsum.photos/48/48?random=2',
-    hint: 'Rahul Gandhi',
+    initials: 'RG',
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    imageUrl: 'https://picsum.photos/48/48?random=3',
-    hint: 'Arvind Kejriwal',
+    initials: 'AK',
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    imageUrl: 'https://picsum.photos/48/48?random=4',
-    hint: 'Mayawati',
+    initials: 'M',
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    imageUrl: 'https://picsum.photos/48/48?random=5',
-    hint: 'Mamata Banerjee',
+    initials: 'MB',
   },
 ];
 
@@ -55,13 +49,8 @@ export default function DashboardPage() {
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
-                      <Image 
-                        src={party.imageUrl} 
-                        alt={`${party.candidate} portrait`} 
-                        width={48}
-                        height={48}
-                        data-ai-hint={party.hint}
-                      />
+                      <AvatarImage src={`/images/candidates/${party.candidate.toLowerCase().replace(' ', '-')}.jpg`} alt={`${party.candidate} portrait`} />
+                      <AvatarFallback>{party.initials}</AvatarFallback>
                     </Avatar>
                     <div>
                       <h3 className="font-semibold text-lg">{party.name}</h3>
