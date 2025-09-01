@@ -2,35 +2,40 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
-import { LotusIcon, HandIcon, BroomIcon, ElephantIcon, FlowersIcon } from '@/components/icons';
+import Image from 'next/image';
 
 const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    logo: <LotusIcon className="w-10 h-10 text-pink-600" />,
+    logo: 'https://placehold.co/40x40/FF9933/FFFFFF?text=BJP',
+    dataAiHint: 'lotus flower',
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    logo: <HandIcon className="w-10 h-10 text-blue-600" />,
+    logo: 'https://placehold.co/40x40/138808/FFFFFF?text=INC',
+    dataAiHint: 'hand symbol',
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    logo: <BroomIcon className="w-10 h-10 text-gray-700" />,
+    logo: 'https://placehold.co/40x40/0072c6/FFFFFF?text=AAP',
+    dataAiHint: 'broom icon',
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    logo: <ElephantIcon className="w-10 h-10 text-blue-800" />,
+    logo: 'https://placehold.co/40x40/224099/FFFFFF?text=BSP',
+    dataAiHint: 'elephant silhouette',
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    logo: <FlowersIcon className="w-10 h-10 text-green-500" />,
+    logo: 'https://placehold.co/40x40/00B300/FFFFFF?text=AITC',
+    dataAiHint: 'twin flowers',
   },
 ];
 
@@ -50,7 +55,7 @@ export default function DashboardPage() {
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12 flex items-center justify-center bg-gray-100">
-                      {party.logo}
+                       <AvatarImage src={party.logo} alt={`${party.name} logo`} data-ai-hint={party.dataAiHint} width={40} height={40} />
                       <AvatarFallback>{party.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
