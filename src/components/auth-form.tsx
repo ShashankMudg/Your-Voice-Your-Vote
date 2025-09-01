@@ -87,7 +87,7 @@ export default function AuthForm() {
               </DialogClose>
               <Button type="submit">
                 <LogIn className="mr-2" />
-                Login
+                Replace
               </Button>
             </DialogFooter>
           </form>
