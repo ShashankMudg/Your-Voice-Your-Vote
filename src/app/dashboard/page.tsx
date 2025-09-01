@@ -4,38 +4,38 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
-import Image from 'next/image';
+import { LotusIcon, HandIcon, BroomIcon, ElephantIcon, FlowersIcon } from '@/components/icons';
 
 const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    logo: 'https://placehold.co/40x40/FF9933/FFFFFF?text=BJP',
-    dataAiHint: 'lotus flower',
+    LogoComponent: LotusIcon,
+    color: 'text-orange-500',
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    logo: 'https://placehold.co/40x40/138808/FFFFFF?text=INC',
-    dataAiHint: 'hand symbol',
+    LogoComponent: HandIcon,
+    color: 'text-blue-500',
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    logo: 'https://placehold.co/40x40/0072c6/FFFFFF?text=AAP',
-    dataAiHint: 'broom icon',
+    LogoComponent: BroomIcon,
+    color: 'text-blue-800',
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    logo: 'https://placehold.co/40x40/224099/FFFFFF?text=BSP',
-    dataAiHint: 'elephant silhouette',
+    LogoComponent: ElephantIcon,
+    color: 'text-blue-900',
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    logo: 'https://placehold.co/40x40/00B300/FFFFFF?text=AITC',
-    dataAiHint: 'twin flowers',
+    LogoComponent: FlowersIcon,
+    color: 'text-green-500',
   },
 ];
 
@@ -54,9 +54,8 @@ export default function DashboardPage() {
               {parties.map((party) => (
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-12 w-12 flex items-center justify-center bg-gray-100">
-                       <AvatarImage src={party.logo} alt={`${party.name} logo`} data-ai-hint={party.dataAiHint} width={40} height={40} />
-                      <AvatarFallback>{party.name.charAt(0)}</AvatarFallback>
+                    <Avatar className={`h-12 w-12 flex items-center justify-center bg-gray-100 dark:bg-gray-800 ${party.color}`}>
+                      <party.LogoComponent className="h-8 w-8" />
                     </Avatar>
                     <div>
                       <h3 className="font-semibold text-lg">{party.name}</h3>
