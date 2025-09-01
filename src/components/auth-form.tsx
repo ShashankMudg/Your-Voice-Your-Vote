@@ -1,40 +1,59 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Send, LogIn } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AuthForm() {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [aadhar, setAadhar] = useState('');
+  const [otp, setOtp] = useState('');
+  const router = useRouter();
+  const { toast } = useToast();
 
   const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically call an API to send the OTP
     if (aadhar.trim().length >= 12) {
+      // In a real app, an API call to send OTP would be made here.
+      console.log(`Sending OTP for Aadhar: ${aadhar}`);
       setIsOtpSent(true);
     }
   };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would verify the OTP and log the user in
-    console.log("Logging in...");
-    setIsOtpSent(false); // Close dialog on login
+    // For demonstration, using a hardcoded OTP.
+    // In a real app, you would verify this against a server.
+    if (otp === '123456') {
+      toast({
+        title: "Success",
+        description: "OTP validated successfully. Redirecting...",
+        variant: "default",
+      });
+      router.push('/dashboard');
+    } else {
+      toast({
+        title: "Error",
+        description: "Wrong OTP entered. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <>
-      <Card className="w-full flex flex-col h-full">
+      <Card className="w-full flex flex-col justify-between h-full">
         <CardHeader>
           <CardTitle>Portal Access</CardTitle>
           <CardDescription>Enter your Aadhar number to receive an OTP.</CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col items-center justify-center">
+        <CardContent className="flex-grow flex flex-col items-center justify-start pt-8">
           <div className="w-full max-w-sm">
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div className="space-y-2">
@@ -47,6 +66,9 @@ export default function AuthForm() {
                   maxLength={12}
                   value={aadhar}
                   onChange={(e) => setAadhar(e.target.value)}
+                  type="text"
+                  pattern="\d{12}"
+                  title="Aadhar number must be 12 digits."
                 />
               </div>
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -63,7 +85,7 @@ export default function AuthForm() {
           <DialogHeader>
             <DialogTitle>Enter OTP</DialogTitle>
             <DialogDescription>
-              An OTP has been sent to your registered mobile number.
+              An OTP has been sent to your registered mobile number. (Hint: use 123456)
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleLogin}>
@@ -78,6 +100,8 @@ export default function AuthForm() {
                   placeholder="Enter your 6-digit OTP"
                   required
                   maxLength={6}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
                 />
               </div>
             </div>
