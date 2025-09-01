@@ -4,38 +4,33 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
-import Image from 'next/image';
+import { LotusIcon, HandIcon, BroomIcon, ElephantIcon, FlowersIcon } from '@/components/icons';
 
 const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    symbol: '/lotus.svg',
-    symbolHint: 'lotus flower',
+    logo: <LotusIcon className="w-10 h-10 text-pink-600" />,
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    symbol: '/hand.svg',
-    symbolHint: 'hand symbol',
+    logo: <HandIcon className="w-10 h-10 text-blue-600" />,
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    symbol: '/broom.svg',
-    symbolHint: 'broom',
+    logo: <BroomIcon className="w-10 h-10 text-gray-700" />,
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    symbol: '/elephant.svg',
-    symbolHint: 'elephant',
+    logo: <ElephantIcon className="w-10 h-10 text-blue-800" />,
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    symbol: '/flowers.svg',
-    symbolHint: 'flowers grass',
+    logo: <FlowersIcon className="w-10 h-10 text-green-500" />,
   },
 ];
 
@@ -54,15 +49,8 @@ export default function DashboardPage() {
               {parties.map((party) => (
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-12 w-12">
-                      <div className="relative h-10 w-10">
-                        <Image 
-                          src={party.symbol} 
-                          alt={`${party.name} symbol`}
-                          fill
-                          data-ai-hint={party.symbolHint}
-                        />
-                      </div>
+                    <Avatar className="h-12 w-12 flex items-center justify-center bg-gray-100">
+                      {party.logo}
                       <AvatarFallback>{party.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
