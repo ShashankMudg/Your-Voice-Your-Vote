@@ -10,32 +10,32 @@ const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    logoUrl: 'https://picsum.photos/48/48?random=1',
-    hint: 'lotus flower',
+    imageUrl: 'https://picsum.photos/48/48?random=1',
+    hint: 'Narendra Modi',
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    logoUrl: 'https://picsum.photos/48/48?random=2',
-    hint: 'hand symbol',
+    imageUrl: 'https://picsum.photos/48/48?random=2',
+    hint: 'Rahul Gandhi',
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    logoUrl: 'https://picsum.photos/48/48?random=3',
-    hint: 'broom icon',
+    imageUrl: 'https://picsum.photos/48/48?random=3',
+    hint: 'Arvind Kejriwal',
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    logoUrl: 'https://picsum.photos/48/48?random=4',
-    hint: 'elephant symbol',
+    imageUrl: 'https://picsum.photos/48/48?random=4',
+    hint: 'Mayawati',
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    logoUrl: 'https://picsum.photos/48/48?random=5',
-    hint: 'twin flowers grass',
+    imageUrl: 'https://picsum.photos/48/48?random=5',
+    hint: 'Mamata Banerjee',
   },
 ];
 
@@ -56,8 +56,8 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
                       <Image 
-                        src={party.logoUrl} 
-                        alt={`${party.name} logo`} 
+                        src={party.imageUrl} 
+                        alt={`${party.candidate} portrait`} 
                         width={48}
                         height={48}
                         data-ai-hint={party.hint}
