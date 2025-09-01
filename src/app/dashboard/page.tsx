@@ -4,38 +4,38 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
-import { LotusIcon, HandIcon, BroomIcon, ElephantIcon, FlowersIcon } from '@/components/icons';
+import Image from 'next/image';
 
 const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    LogoComponent: LotusIcon,
-    color: 'text-orange-500',
+    logoUrl: 'https://picsum.photos/48/48?random=1',
+    hint: 'lotus flower',
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    LogoComponent: HandIcon,
-    color: 'text-blue-500',
+    logoUrl: 'https://picsum.photos/48/48?random=2',
+    hint: 'hand symbol',
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    LogoComponent: BroomIcon,
-    color: 'text-blue-800',
+    logoUrl: 'https://picsum.photos/48/48?random=3',
+    hint: 'broom icon',
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    LogoComponent: ElephantIcon,
-    color: 'text-blue-900',
+    logoUrl: 'https://picsum.photos/48/48?random=4',
+    hint: 'elephant symbol',
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    LogoComponent: FlowersIcon,
-    color: 'text-green-500',
+    logoUrl: 'https://picsum.photos/48/48?random=5',
+    hint: 'twin flowers grass',
   },
 ];
 
@@ -54,8 +54,16 @@ export default function DashboardPage() {
               {parties.map((party) => (
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
-                    <Avatar className={`h-12 w-12 flex items-center justify-center bg-gray-100 dark:bg-gray-800 ${party.color}`}>
-                      <party.LogoComponent className="h-8 w-8" />
+                    <Avatar className="h-12 w-12">
+                      <div className="relative w-full h-full">
+                        <Image 
+                          src={party.logoUrl} 
+                          alt={`${party.name} logo`} 
+                          fill 
+                          className="object-contain"
+                          data-ai-hint={party.hint}
+                        />
+                      </div>
                     </Avatar>
                     <div>
                       <h3 className="font-semibold text-lg">{party.name}</h3>
