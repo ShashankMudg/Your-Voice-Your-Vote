@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -34,6 +37,13 @@ const parties = [
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
+
+  const handleVote = () => {
+    // In a real app, you would record the vote here.
+    router.push('/thank-you');
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -49,7 +59,7 @@ export default function DashboardPage() {
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={`/images/candidates/${party.candidate.toLowerCase().replace(' ', '-')}.jpg`} alt={`${party.candidate} portrait`} />
+                      <AvatarImage src={`https://placehold.co/100x100.png?text=${party.initials}`} alt={`${party.candidate} portrait`} data-ai-hint="candidate portrait" />
                       <AvatarFallback>{party.initials}</AvatarFallback>
                     </Avatar>
                     <div>
@@ -70,7 +80,7 @@ export default function DashboardPage() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction>Confirm Vote</AlertDialogAction>
+                        <AlertDialogAction onClick={handleVote}>Confirm Vote</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
