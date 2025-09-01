@@ -10,31 +10,31 @@ const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    symbol: 'https://picsum.photos/40/40?grayscale&random=1',
+    symbol: 'https://picsum.photos/40/40?random=1',
     symbolHint: 'lotus flower',
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    symbol: 'https://picsum.photos/40/40?grayscale&random=2',
+    symbol: 'https://picsum.photos/40/40?random=2',
     symbolHint: 'hand symbol',
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    symbol: 'https://picsum.photos/40/40?grayscale&random=3',
+    symbol: 'https://picsum.photos/40/40?random=3',
     symbolHint: 'broom',
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    symbol: 'https://picsum.photos/40/40?grayscale&random=4',
+    symbol: 'https://picsum.photos/40/40?random=4',
     symbolHint: 'elephant',
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    symbol: 'https://picsum.photos/40/40?grayscale&random=5',
+    symbol: 'https://picsum.photos/40/40?random=5',
     symbolHint: 'flowers grass',
   },
 ];
@@ -61,7 +61,6 @@ export default function DashboardPage() {
                         width={40}
                         height={40}
                         data-ai-hint={party.symbolHint}
-                        className="grayscale"
                       />
                       <AvatarFallback>{party.name.charAt(0)}</AvatarFallback>
                     </Avatar>
