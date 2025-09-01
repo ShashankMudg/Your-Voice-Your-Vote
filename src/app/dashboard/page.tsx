@@ -40,6 +40,12 @@ const parties = [
     logo: 'https://picsum.photos/100/100?random=5',
     dataAiHint: 'flowers grass',
   },
+  {
+    name: 'None of the Above',
+    candidate: 'NOTA',
+    logo: 'https://picsum.photos/100/100?random=6',
+    dataAiHint: 'cross mark',
+  },
 ];
 
 export default function DashboardPage() {
