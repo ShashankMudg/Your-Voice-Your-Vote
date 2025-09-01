@@ -7,37 +7,38 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
+import Image from 'next/image';
 
 const parties = [
   {
     name: 'Bharatiya Janata Party',
     candidate: 'Narendra Modi',
-    initials: 'NM',
+    logo: 'https://picsum.photos/100/100?random=1',
+    dataAiHint: 'lotus flower',
   },
   {
     name: 'Indian National Congress',
     candidate: 'Rahul Gandhi',
-    initials: 'RG',
+    logo: 'https://picsum.photos/100/100?random=2',
+    dataAiHint: 'hand symbol',
   },
   {
     name: 'Aam Aadmi Party',
     candidate: 'Arvind Kejriwal',
-    initials: 'AK',
+    logo: 'https://picsum.photos/100/100?random=3',
+    dataAiHint: 'broom symbol',
   },
   {
     name: 'Bahujan Samaj Party',
     candidate: 'Mayawati',
-    initials: 'M',
+    logo: 'https://picsum.photos/100/100?random=4',
+    dataAiHint: 'elephant symbol',
   },
   {
     name: 'All India Trinamool Congress',
     candidate: 'Mamata Banerjee',
-    initials: 'MB',
-  },
-  {
-    name: 'None of the Above',
-    candidate: 'NOTA',
-    initials: 'NOTA',
+    logo: 'https://picsum.photos/100/100?random=5',
+    dataAiHint: 'flowers grass',
   },
 ];
 
@@ -45,12 +46,9 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const handleVote = () => {
-    // Mark the user as voted in localStorage.
-    const aadhar = localStorage.getItem('currentVoterAadhar');
-    if (aadhar) {
-      localStorage.setItem(aadhar, 'voted');
-    }
-    router.push('/thank-you');
+    // This is a placeholder for a real voting submission.
+    // In a real app, this would involve a secure call to a backend service.
+    router.push('/');
   };
 
   return (
@@ -67,10 +65,7 @@ export default function DashboardPage() {
               {parties.map((party) => (
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={`https://placehold.co/100x100.png?text=${party.initials}`} alt={`${party.candidate} portrait`} data-ai-hint="candidate portrait" />
-                      <AvatarFallback>{party.initials}</AvatarFallback>
-                    </Avatar>
+                    <Image src={party.logo} alt={`${party.name} logo`} width={64} height={64} className="h-16 w-16" data-ai-hint={party.dataAiHint} />
                     <div>
                       <h3 className="font-semibold text-lg">{party.name}</h3>
                       <p className="text-sm text-muted-foreground">{party.candidate}</p>
