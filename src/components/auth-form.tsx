@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,20 @@ export default function AuthForm() {
   const [otp, setOtp] = useState('');
   const router = useRouter();
   const { toast } = useToast();
+  const [hasVoted, setHasVoted] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (aadhar) {
+      const voted = localStorage.getItem(`voted_${aadhar}`);
+      setHasVoted(!!voted);
+    }
+  }, [aadhar]);
 
   const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     if (aadhar.trim().length >= 12) {
-      // In a real app, an API call to send OTP would be made here.
+      const voted = localStorage.getItem(`voted_${aadhar}`);
+      setHasVoted(!!voted);
       console.log(`Sending OTP for Aadhar: ${aadhar}`);
       setIsOtpSent(true);
     }
@@ -28,15 +37,17 @@ export default function AuthForm() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // For demonstration, using a hardcoded OTP.
-    // In a real app, you would verify this against a server.
     if (otp === '123456') {
-      toast({
-        title: "Success",
-        description: "OTP validated successfully. Redirecting...",
-        variant: "default",
-      });
-      router.push('/dashboard');
+      if (hasVoted) {
+        router.push('/already-voted');
+      } else {
+        toast({
+          title: "Success",
+          description: "OTP validated successfully. Redirecting...",
+          variant: "default",
+        });
+        router.push(`/dashboard?aadhar=${aadhar}`);
+      }
     } else {
       toast({
         title: "Error",
@@ -67,7 +78,7 @@ export default function AuthForm() {
                   value={aadhar}
                   onChange={(e) => setAadhar(e.target.value)}
                   type="text"
-                  pattern="\d{12}"
+                  pattern="\\d{12}"
                   title="Aadhar number must be 12 digits."
                 />
               </div>

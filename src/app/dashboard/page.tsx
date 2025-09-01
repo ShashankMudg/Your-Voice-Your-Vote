@@ -1,60 +1,32 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
-import Image from 'next/image';
 
 const parties = [
-  {
-    name: 'Bharatiya Janata Party',
-    candidate: 'Narendra Modi',
-    logo: 'https://picsum.photos/100/100?random=1',
-    dataAiHint: 'lotus flower',
-  },
-  {
-    name: 'Indian National Congress',
-    candidate: 'Rahul Gandhi',
-    logo: 'https://picsum.photos/100/100?random=2',
-    dataAiHint: 'hand symbol',
-  },
-  {
-    name: 'Aam Aadmi Party',
-    candidate: 'Arvind Kejriwal',
-    logo: 'https://picsum.photos/100/100?random=3',
-    dataAiHint: 'broom symbol',
-  },
-  {
-    name: 'Bahujan Samaj Party',
-    candidate: 'Mayawati',
-    logo: 'https://picsum.photos/100/100?random=4',
-    dataAiHint: 'elephant symbol',
-  },
-  {
-    name: 'All India Trinamool Congress',
-    candidate: 'Mamata Banerjee',
-    logo: 'https://picsum.photos/100/100?random=5',
-    dataAiHint: 'flowers grass',
-  },
-  {
-    name: 'None of the Above',
-    candidate: 'NOTA',
-    logo: 'https://picsum.photos/100/100?random=6',
-    dataAiHint: 'cross mark',
-  },
+  { name: 'Bharatiya Janata Party', candidate: 'Narendra Modi', initials: 'NM' },
+  { name: 'Indian National Congress', candidate: 'Rahul Gandhi', initials: 'RG' },
+  { name: 'Aam Aadmi Party', candidate: 'Arvind Kejriwal', initials: 'AK' },
+  { name: 'Bahujan Samaj Party', candidate: 'Mayawati', initials: 'M' },
+  { name: 'All India Trinamool Congress', candidate: 'Mamata Banerjee', initials: 'MB' },
+  { name: 'None of the Above', candidate: 'NOTA', initials: 'N' },
 ];
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const aadhar = searchParams.get('aadhar');
 
   const handleVote = () => {
-    // This is a placeholder for a real voting submission.
-    // In a real app, this would involve a secure call to a backend service.
-    router.push('/');
+    if (aadhar) {
+      localStorage.setItem(`voted_${aadhar}`, 'true');
+    }
+    router.push('/thank-you');
   };
 
   return (
@@ -71,7 +43,9 @@ export default function DashboardPage() {
               {parties.map((party) => (
                 <Card key={party.name} className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-4">
-                    <Image src={party.logo} alt={`${party.name} logo`} width={64} height={64} className="h-16 w-16" data-ai-hint={party.dataAiHint} />
+                    <Avatar>
+                      <AvatarFallback>{party.initials}</AvatarFallback>
+                    </Avatar>
                     <div>
                       <h3 className="font-semibold text-lg">{party.name}</h3>
                       <p className="text-sm text-muted-foreground">{party.candidate}</p>
