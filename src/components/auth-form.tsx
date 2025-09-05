@@ -128,7 +128,7 @@ export default function AuthForm() {
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
               <Button type="submit">
-                <LogIn className="mr-2" />
+                <LogIn className="mr-2 h-4 w-4" />
                 Validate
               </Button>
             </DialogFooter>
