@@ -1,8 +1,6 @@
 import Header from '@/components/header';
 import Footer from '@/components/footer';
-import AuthForm from '@/components/auth-form';
-import ElectionSchedule from '@/components/election-schedule';
-import VotingInstructions from '@/components/voting-instructions';
+import ElectionList from '@/components/election-list';
 
 export default function Home() {
   return (
@@ -14,21 +12,12 @@ export default function Home() {
             Your Voice, Your Vote
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Securely cast your vote and participate in shaping the future of India. Every vote counts.
+            Welcome to the official portal for Indian Elections. Browse the elections below and cast your vote securely.
           </p>
         </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 items-stretch">
-          <div className="md:col-span-2 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <AuthForm />
-          </div>
-          <div className="md:col-span-1 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <VotingInstructions />
-          </div>
-        </div>
-
-        <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <ElectionSchedule />
+        <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <ElectionList />
         </div>
       </main>
       <Footer />
