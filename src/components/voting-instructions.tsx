@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useActionState } from "react";
-import { useFormStatus } from "react-dom";
+import { useRef } from "react";
 import { getPersonalizedInstructions } from "@/app/actions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,49 +8,36 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Info, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-const initialState = {
-  message: "",
-  instructions: null,
-  errors: null,
-};
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={pending}>
-      {pending ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Generating...
-        </>
-      ) : (
-        <>
-          <Send className="mr-2 h-4 w-4" />
-          Get Instructions
-        </>
-      )}
-    </Button>
-  );
-}
+import { useAction } from "next-safe-action/react";
 
 export default function VotingInstructions() {
-  const [state, formAction] = useActionState(getPersonalizedInstructions, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
 
-  useEffect(() => {
-    if (state?.message && state.message !== "success") {
+  const { execute, result, status } = useAction(getPersonalizedInstructions, {
+    onSuccess: (data) => {
+      if (data?.instructions) {
+        formRef.current?.reset();
+      }
+    },
+    onError: (error) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: state.message,
+        description: error.serverError || "Could not fetch instructions.",
       });
     }
-    if (state?.message === "success") {
-        formRef.current?.reset();
-    }
-  }, [state, toast]);
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const age = formData.get("age") as string;
+    const location = formData.get("location") as string;
+    execute({ age: Number(age), location });
+  }
+
+  const isExecuting = status === 'executing';
 
   return (
     <Card>
@@ -62,25 +48,37 @@ export default function VotingInstructions() {
         <CardDescription>Get personalized voting instructions based on your age and location.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form ref={formRef} action={formAction} className="space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="age">Your Age</Label>
             <Input id="age" name="age" type="number" placeholder="e.g., 25" required />
-            {state.errors?.age && <p className="text-sm font-medium text-destructive mt-1">{state.errors.age[0]}</p>}
+            {result.validationErrors?.age && <p className="text-sm font-medium text-destructive mt-1">{result.validationErrors.age[0]}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="location">Your Location (City/State)</Label>
             <Input id="location" name="location" placeholder="e.g., Delhi" required />
-            {state.errors?.location && <p className="text-sm font-medium text-destructive mt-1">{state.errors.location[0]}</p>}
+            {result.validationErrors?.location && <p className="text-sm font-medium text-destructive mt-1">{result.validationErrors.location[0]}</p>}
           </div>
-          <SubmitButton />
+          <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isExecuting}>
+            {isExecuting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Send className="mr-2 h-4 w-4" />
+                Get Instructions
+              </>
+            )}
+          </Button>
         </form>
 
-        {state.instructions && (
+        {result.data?.instructions && (
           <div className="mt-6 p-4 bg-secondary border border-primary/10 rounded-lg">
             <h4 className="font-bold text-primary mb-2">Your Personalized Instructions:</h4>
             <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-              {state.instructions}
+              {result.data.instructions}
             </div>
           </div>
         )}

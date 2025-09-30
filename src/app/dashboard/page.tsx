@@ -9,17 +9,28 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
 import { getParties } from '@/lib/data/parties';
 import { castVote } from '@/app/actions';
-import { useTransition } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAction } from 'next-safe-action/react';
 
 const parties = getParties();
 
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const aadhar = searchParams.get('aadhar');
-  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+
+  const { execute, status } = useAction(castVote, {
+    onError: (error) => {
+        const message = error.serverError || "An unexpected error occurred.";
+        toast({
+          title: "Error",
+          description: message,
+          variant: "destructive",
+        });
+    }
+    // Success case is a redirect handled by the server action
+  });
 
   if (!aadhar) {
     return (
@@ -46,19 +57,10 @@ export default function DashboardPage() {
   }
 
   const handleVote = (partyName: string) => {
-    startTransition(async () => {
-      try {
-        await castVote(aadhar, partyName);
-      } catch (error) {
-        console.error(error);
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred while casting your vote.",
-          variant: "destructive",
-        });
-      }
-    });
+    execute({ aadhar, partyName });
   };
+  
+  const isPending = status === 'executing';
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
