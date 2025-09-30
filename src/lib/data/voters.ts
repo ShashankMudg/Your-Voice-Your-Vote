@@ -14,6 +14,7 @@ const voters: Voter[] = [
     { aadhar: "444455556666", name: "Sita Sharma", hasVoted: true, votedFor: "Indian National Congress" },
     { aadhar: "777788889999", name: "Amit Singh", hasVoted: false },
     { aadhar: "123456789012", name: "Priya Patel", hasVoted: false },
+    { aadhar: "112211221122", name: "John Doe", hasVoted: false },
 ];
 
 /**
