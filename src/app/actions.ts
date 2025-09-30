@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { personalizedVotingInstructions } from "@/ai/flows/personalized-voting-instructions";
 import { getVoterByAadhar, recordVote } from "@/lib/data/voters";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -30,34 +29,6 @@ const rateLimiter = (): { success: boolean; message?: string } => {
 
     return { success: true };
 };
-
-
-// Schema for personalized instructions form
-const instructionsSchema = z.object({
-  age: z.coerce.number().min(18, { message: "You must be at least 18 to vote." }).max(120, { message: "Please enter a valid age." }),
-  location: z.string().min(2, { message: "Location must be at least 2 characters." }),
-});
-
-
-export const getPersonalizedInstructions = async (formData: FormData) => {
-    const data = {
-        age: formData.get('age'),
-        location: formData.get('location'),
-    };
-    const parsed = instructionsSchema.safeParse(data);
-
-    if (!parsed.success) {
-        return { validationErrors: parsed.error.flatten().fieldErrors };
-    }
-
-    try {
-        const result = await personalizedVotingInstructions(parsed.data);
-        return { instructions: result.instructions };
-    } catch (error) {
-        console.error(error);
-        return { serverError: "An error occurred while fetching instructions." };
-    }
-}
 
 
 // --- Authentication and Voting Actions ---

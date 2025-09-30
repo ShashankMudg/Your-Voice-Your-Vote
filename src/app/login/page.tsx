@@ -1,7 +1,7 @@
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import AuthForm from '@/components/auth-form';
-import VotingInstructions from '@/components/voting-instructions';
+import ElectionSchedule from '@/components/election-schedule';
 
 export default function LoginPage() {
   return (
@@ -22,7 +22,7 @@ export default function LoginPage() {
             <AuthForm />
           </div>
           <div className="md:col-span-1">
-            <VotingInstructions />
+            <ElectionSchedule />
           </div>
         </div>
       </main>
