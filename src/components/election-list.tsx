@@ -3,19 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
+import { getRunningElections } from "@/lib/data/elections";
 
-const elections = [
-  {
-    name: 'Lok Sabha General Election 2024',
-    status: 'Ongoing',
-    constituency: 'Nationwide',
-    date: 'April 19 - June 1, 2024',
-    details: 'The 18th Lok Sabha election to elect 543 members of the lower house of Parliament.'
-  },
-];
-
-export default function ElectionList() {
-  const runningElections = elections.filter(election => election.status === 'Ongoing');
+export default async function ElectionList() {
+  const runningElections = await getRunningElections();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -50,6 +41,16 @@ export default function ElectionList() {
           </CardFooter>
         </Card>
       ))}
+       {runningElections.length === 0 && (
+        <Card className="md:col-span-2 lg:col-span-3 text-center">
+            <CardHeader>
+                <CardTitle>No Ongoing Elections</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-muted-foreground">There are currently no elections running. Please check back later.</p>
+            </CardContent>
+        </Card>
+       )}
     </div>
   );
 }

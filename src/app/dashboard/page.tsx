@@ -1,32 +1,63 @@
 "use client";
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
+import { getParties } from '@/lib/data/parties';
+import { castVote } from '@/app/actions';
+import { useTransition } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-const parties = [
-  { name: 'Bharatiya Janata Party', candidate: 'Narendra Modi', initials: 'NM' },
-  { name: 'Indian National Congress', candidate: 'Rahul Gandhi', initials: 'RG' },
-  { name: 'Aam Aadmi Party', candidate: 'Arvind Kejriwal', initials: 'AK' },
-  { name: 'Bahujan Samaj Party', candidate: 'Mayawati', initials: 'M' },
-  { name: 'All India Trinamool Congress', candidate: 'Mamata Banerjee', initials: 'MB' },
-  { name: 'None of the Above', candidate: 'NOTA', initials: 'N' },
-];
+const parties = getParties();
 
 export default function DashboardPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const aadhar = searchParams.get('aadhar');
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
 
-  const handleVote = () => {
-    if (aadhar) {
-      localStorage.setItem(`voted_${aadhar}`, 'true');
-    }
-    router.push('/thank-you');
+  if (!aadhar) {
+    return (
+        <div className="flex flex-col min-h-screen bg-background">
+            <Header />
+            <main className="flex-grow container mx-auto px-4 py-8 md:py-12 flex items-center justify-center">
+                <Card className="w-full max-w-md text-center">
+                    <CardHeader>
+                        <CardTitle className="text-2xl text-destructive">Authentication Error</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">
+                            No Aadhar number was provided. Please log in to access this page.
+                        </p>
+                        <Button asChild className="mt-4">
+                            <a href="/login">Go to Login</a>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </main>
+            <Footer />
+      </div>
+    );
+  }
+
+  const handleVote = (partyName: string) => {
+    startTransition(async () => {
+      try {
+        await castVote(aadhar, partyName);
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred while casting your vote.",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
   return (
@@ -53,7 +84,7 @@ export default function DashboardPage() {
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button>Vote</Button>
+                      <Button disabled={isPending}>Vote</Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
@@ -64,7 +95,10 @@ export default function DashboardPage() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleVote}>Confirm Vote</AlertDialogAction>
+                        <AlertDialogAction onClick={() => handleVote(party.name)} disabled={isPending}>
+                          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                          Confirm Vote
+                        </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
