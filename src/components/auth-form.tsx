@@ -112,7 +112,6 @@ export default function AuthForm() {
                   placeholder="xxxx xxxx xxxx"
                   required
                   type="text"
-                  pattern="\\d{12}"
                   title="Aadhar number must be 12 digits."
                   maxLength={12}
                   value={aadharValue}
