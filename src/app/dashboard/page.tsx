@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,7 +12,6 @@ import { getParties } from '@/lib/data/parties';
 import { castVote } from '@/app/actions';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useAction } from 'next-safe-action/react';
 
 const parties = getParties();
 
@@ -19,18 +19,7 @@ export default function DashboardPage() {
   const searchParams = useSearchParams();
   const aadhar = searchParams.get('aadhar');
   const { toast } = useToast();
-
-  const { execute, status } = useAction(castVote, {
-    onError: (error) => {
-        const message = error.serverError || "An unexpected error occurred.";
-        toast({
-          title: "Error",
-          description: message,
-          variant: "destructive",
-        });
-    }
-    // Success case is a redirect handled by the server action
-  });
+  const [isPending, setIsPending] = useState(false);
 
   if (!aadhar) {
     return (
@@ -56,11 +45,19 @@ export default function DashboardPage() {
     );
   }
 
-  const handleVote = (partyName: string) => {
-    execute({ aadhar, partyName });
+  const handleVote = async (partyName: string) => {
+    setIsPending(true);
+    const result = await castVote(aadhar, partyName);
+    if (result?.serverError) {
+        toast({
+            title: "Error",
+            description: result.serverError,
+            variant: "destructive",
+        });
+    }
+    // Success case is a redirect handled by the server action
+    setIsPending(false);
   };
-  
-  const isPending = status === 'executing';
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

@@ -5,80 +5,82 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Send, LogIn, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { requestOtp, verifyOtpAndLogin } from "@/app/actions";
-import { useAction } from "next-safe-action/react";
+import { useFormState, useFormStatus } from 'react-dom';
+
+const initialRequestState = {
+  success: false,
+  aadhar: "",
+  serverError: undefined,
+};
+
+const initialVerifyState = {
+  serverError: undefined,
+};
+
+function RequestOtpButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+      Send OTP
+    </Button>
+  )
+}
+
+function VerifyOtpButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
+      Validate
+    </Button>
+  )
+}
+
 
 export default function AuthForm() {
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
-  const [aadharValue, setAadharValue] = useState("");
-  const aadharFormRef = useRef<HTMLFormElement>(null);
-  const otpFormRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
-  const {
-    execute: executeRequestOtp,
-    status: requestStatus,
-    result: requestResult,
-  } = useAction(requestOtp, {
-    onSuccess: (data) => {
-      if (data?.success && data.aadhar) {
-        setAadharValue(data.aadhar);
-        setIsOtpDialogOpen(true);
-        toast({
-          title: "OTP Sent",
-          description: "An OTP has been sent to your registered mobile number. (Hint: use 123456)",
-        });
-      }
-    },
-    onError: (error) => {
-      const message = error.serverError || "An unexpected error occurred.";
+  const [requestState, requestOtpAction] = useFormState(requestOtp, initialRequestState);
+  const [verifyState, verifyOtpAction] = useFormState(verifyOtpAndLogin, initialVerifyState);
+
+  const aadharFormRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (requestState?.success && requestState.aadhar) {
+      setIsOtpDialogOpen(true);
+      toast({
+        title: "OTP Sent",
+        description: "An OTP has been sent to your registered mobile number. (Hint: use 123456)",
+      });
+    }
+    if (requestState?.serverError) {
       toast({
         title: "Error",
-        description: message,
+        description: requestState.serverError,
         variant: "destructive",
       });
-    },
-  });
-
-  const {
-    execute: executeVerifyOtp,
-    status: verifyStatus,
-  } = useAction(verifyOtpAndLogin, {
-    onError: (error) => {
-        const message = error.serverError || "Failed to verify OTP.";
-        toast({
-            title: "Error",
-            description: message,
-            variant: "destructive",
-        });
     }
-    // Success case is a redirect, so no handler needed here.
-  });
+  }, [requestState, toast]);
 
-  const handleAadharSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const aadhar = formData.get("aadhar") as string;
-    executeRequestOtp({ aadhar });
-  };
-
-  const handleOtpSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const otp = formData.get("otp") as string;
-    if (aadharValue) {
-        executeVerifyOtp({ aadhar: aadharValue, otp });
+  useEffect(() => {
+    if (verifyState?.serverError) {
+      toast({
+        title: "Error",
+        description: verifyState.serverError,
+        variant: "destructive",
+      });
     }
-  };
+  }, [verifyState, toast]);
 
   const onDialogClose = () => {
     setIsOtpDialogOpen(false);
     aadharFormRef.current?.reset();
-    otpFormRef.current?.reset();
-    setAadharValue("");
   }
 
 
@@ -91,7 +93,7 @@ export default function AuthForm() {
         </CardHeader>
         <CardContent className="flex-grow flex flex-col items-center justify-start pt-8">
           <div className="w-full max-w-sm">
-            <form ref={aadharFormRef} onSubmit={handleAadharSubmit} className="space-y-4">
+            <form ref={aadharFormRef} action={requestOtpAction} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="aadhar-login">Aadhar Number</Label>
                 <Input
@@ -103,10 +105,7 @@ export default function AuthForm() {
                   maxLength={12}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={requestStatus === 'executing'}>
-                {requestStatus === 'executing' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                Send OTP
-              </Button>
+              <RequestOtpButton />
             </form>
           </div>
         </CardContent>
@@ -120,7 +119,8 @@ export default function AuthForm() {
               An OTP has been sent to your registered mobile number. (Hint: use 123456)
             </DialogDescription>
           </DialogHeader>
-          <form ref={otpFormRef} onSubmit={handleOtpSubmit}>
+          <form action={verifyOtpAction}>
+            <input type="hidden" name="aadhar" value={requestState?.aadhar || ''} />
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="otp" className="text-right">
@@ -137,13 +137,8 @@ export default function AuthForm() {
               </div>
             </div>
             <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button type="submit" disabled={verifyStatus === 'executing'}>
-                {verifyStatus === 'executing' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
-                Validate
-              </Button>
+                <Button variant="outline" type="button" onClick={onDialogClose}>Cancel</Button>
+              <VerifyOtpButton />
             </DialogFooter>
           </form>
         </DialogContent>
