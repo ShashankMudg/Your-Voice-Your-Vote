@@ -12,6 +12,7 @@ import { getParties } from '@/lib/data/parties';
 import { castVote } from '@/app/actions';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useMetaMask } from '@/contexts/MetaMaskProvider';
 
 const parties = getParties();
 
@@ -20,6 +21,35 @@ export default function DashboardPage() {
   const aadhar = searchParams.get('aadhar');
   const { toast } = useToast();
   const [isPending, setIsPending] = useState(false);
+  const { account } = useMetaMask();
+
+
+  const handleVote = async (partyName: string) => {
+    if (!account) {
+        toast({
+            title: "Wallet Not Connected",
+            description: "Please connect your MetaMask wallet to cast a vote.",
+            variant: "destructive",
+        });
+        return;
+    }
+
+    setIsPending(true);
+    // Here you would interact with your smart contract
+    console.log(`Casting vote for ${partyName} with wallet ${account}`);
+    // For now, we'll still use the server action for demonstration
+    const result = await castVote(aadhar!, partyName);
+    
+    if (result?.serverError) {
+        toast({
+            title: "Error",
+            description: result.serverError,
+            variant: "destructive",
+        });
+    }
+    // Success case is a redirect handled by the server action
+    setIsPending(false);
+  };
 
   if (!aadhar) {
     return (
@@ -45,19 +75,6 @@ export default function DashboardPage() {
     );
   }
 
-  const handleVote = async (partyName: string) => {
-    setIsPending(true);
-    const result = await castVote(aadhar, partyName);
-    if (result?.serverError) {
-        toast({
-            title: "Error",
-            description: result.serverError,
-            variant: "destructive",
-        });
-    }
-    // Success case is a redirect handled by the server action
-    setIsPending(false);
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -66,7 +83,7 @@ export default function DashboardPage() {
         <Card className="w-full max-w-4xl mx-auto">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl text-primary font-headline">Cast Your Vote</CardTitle>
-            <CardDescription>Select a candidate to cast your vote. Your choice is final.</CardDescription>
+            <CardDescription>Select a candidate to cast your vote. Your choice is final and will be recorded on the blockchain.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -83,20 +100,23 @@ export default function DashboardPage() {
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button disabled={isPending}>Vote</Button>
+                      <Button disabled={isPending || !account}>
+                        { isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null }
+                        Vote
+                      </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Confirm Your Vote</AlertDialogTitle>
                         <AlertDialogDescription>
-                          You are about to cast your vote for {party.candidate} ({party.name}). This action cannot be undone. Are you sure you want to proceed?
+                          You are about to cast your vote for {party.candidate} ({party.name}). This action is irreversible and will be recorded on the blockchain. Are you sure?
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={() => handleVote(party.name)} disabled={isPending}>
                           {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                          Confirm Vote
+                          Confirm & Cast Vote
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -104,6 +124,11 @@ export default function DashboardPage() {
                 </Card>
               ))}
             </div>
+            {!account && (
+                 <p className="text-center text-destructive font-semibold mt-6">
+                    Please connect your MetaMask wallet to enable voting.
+                </p>
+            )}
           </CardContent>
         </Card>
       </main>
