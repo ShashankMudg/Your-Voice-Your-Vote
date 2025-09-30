@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useActionState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Send, LogIn, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { requestOtp, verifyOtpAndLogin } from "@/app/actions";
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 
 const initialRequestState = {
   success: false,
@@ -46,8 +46,8 @@ export default function AuthForm() {
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const [requestState, requestOtpAction] = useFormState(requestOtp, initialRequestState);
-  const [verifyState, verifyOtpAction] = useFormState(verifyOtpAndLogin, initialVerifyState);
+  const [requestState, requestOtpAction] = useActionState(requestOtp, initialRequestState);
+  const [verifyState, verifyOtpAction] = useActionState(verifyOtpAndLogin, initialVerifyState);
 
   const aadharFormRef = useRef<HTMLFormElement>(null);
 

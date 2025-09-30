@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useActionState } from "react";
 import { getPersonalizedInstructions } from "@/app/actions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Info, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 
 const initialState = {
   instructions: undefined,
@@ -39,7 +39,7 @@ function SubmitButton() {
 export default function VotingInstructions() {
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
-  const [state, formAction] = useFormState(getPersonalizedInstructions, initialState);
+  const [state, formAction] = useActionState(getPersonalizedInstructions, initialState);
 
   useEffect(() => {
     if (state.instructions) {
