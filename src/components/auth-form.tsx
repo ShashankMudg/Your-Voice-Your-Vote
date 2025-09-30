@@ -47,12 +47,13 @@ export default function AuthForm() {
   const [verifyState, verifyOtpAction] = useActionState(verifyOtpAndLogin, initialVerifyState);
   
   const [isOtpSent, setIsOtpSent] = useState(false);
+  const [aadharValue, setAadharValue] = useState("");
   const aadharFormRef = useRef<HTMLFormElement>(null);
   const otpFormRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (requestState.success) {
+    if (requestState.success && requestState.aadhar) {
       setIsOtpSent(true);
       toast({
         title: "OTP Sent",
@@ -84,9 +85,13 @@ export default function AuthForm() {
 
   const onDialogClose = () => {
     setIsOtpSent(false);
-    // Optionally reset form states if dialog is closed
     aadharFormRef.current?.reset();
     otpFormRef.current?.reset();
+    setAadharValue("");
+  }
+
+  const handleAadharChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAadharValue(e.target.value);
   }
 
   return (
@@ -107,9 +112,11 @@ export default function AuthForm() {
                   placeholder="xxxx xxxx xxxx"
                   required
                   type="text"
-                  pattern="\d{12}"
+                  pattern="\\d{12}"
                   title="Aadhar number must be 12 digits."
                   maxLength={12}
+                  value={aadharValue}
+                  onChange={handleAadharChange}
                 />
               </div>
               <RequestOtpButton />
