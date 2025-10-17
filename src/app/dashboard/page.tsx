@@ -1,65 +1,99 @@
 "use client";
 
-import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import Header from '@/components/header';
-import Footer from '@/components/footer';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogFooter } from '@/components/ui/alert-dialog';
-import { getParties } from '@/lib/data/parties';
-import { castVote } from '@/app/actions';
-import { Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useSearchParams, useRouter } from "next/navigation";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
 
-const parties = getParties();
+import { ethers } from "ethers";
+
+// ✅ Parties (must match Solidity deployment order)
+const parties = [
+  { id: 0, name: "Bharatiya Janata Party", candidate: "Narendra Modi", initials: "NM" },
+  { id: 1, name: "Indian National Congress", candidate: "Rahul Gandhi", initials: "RG" },
+  { id: 2, name: "Aam Aadmi Party", candidate: "Arvind Kejriwal", initials: "AK" },
+  { id: 3, name: "Bahujan Samaj Party", candidate: "Mayawati", initials: "M" },
+  { id: 4, name: "All India Trinamool Congress", candidate: "Mamata Banerjee", initials: "MB" },
+  { id: 5, name: "None of the Above", candidate: "NOTA", initials: "N" },
+];
+
+// ✅ Minimal ABI (only vote + getVotes needed)
+const contractABI = [
+  {
+    inputs: [{ internalType: "uint256", name: "_partyId", type: "uint256" }],
+    name: "vote",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "_partyId", type: "uint256" }],
+    name: "getVotes",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
+// ⚡ Replace with your deployed contract address
+const contractAddress = "YOUR_CONTRACT_ADDRESS_HERE";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const aadhar = searchParams.get('aadhar');
-  const { toast } = useToast();
-  const [isPending, setIsPending] = useState(false);
+  const aadhar = searchParams.get("aadhar");
 
-  const handleVote = async (partyName: string) => {
-    setIsPending(true);
-    const result = await castVote(aadhar!, partyName);
-    
-    if (result?.serverError) {
-        toast({
-            title: "Error",
-            description: result.serverError,
-            variant: "destructive",
-        });
+  // ✅ Voting logic
+  const handleVote = async (partyId: number) => {
+    try {
+      if (typeof window.ethereum === "undefined") {
+        alert("❌ Please install MetaMask!");
+        return;
+      }
+
+      // Connect wallet when vote button is clicked
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+
+      // Create contract instance
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+      // Send transaction
+      const tx = await contract.vote(partyId);
+      await tx.wait();
+
+      // Optional: Save locally to prevent double voting (your Aadhaar logic)
+      if (aadhar) {
+        localStorage.setItem(`voted_${aadhar}`, "true");
+      }
+
+      alert(`✅ You voted for ${parties[partyId].candidate}!`);
+      router.push("/thank-you");
+    } catch (error) {
+      console.error(error);
+      alert("❌ Transaction failed (maybe already voted?)");
     }
-    // Success case is a redirect handled by the server action
-    setIsPending(false);
   };
-
-  if (!aadhar) {
-    return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Header />
-            <main className="flex-grow container mx-auto px-4 py-8 md:py-12 flex items-center justify-center">
-                <Card className="w-full max-w-md text-center">
-                    <CardHeader>
-                        <CardTitle className="text-2xl text-destructive">Authentication Error</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground">
-                            No Aadhar number was provided. Please log in to access this page.
-                        </p>
-                        <Button asChild className="mt-4">
-                            <a href="/login">Go to Login</a>
-                        </Button>
-                    </CardContent>
-                </Card>
-            </main>
-            <Footer />
-      </div>
-    );
-  }
-
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -67,41 +101,50 @@ export default function DashboardPage() {
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <Card className="w-full max-w-4xl mx-auto">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl text-primary font-headline">Cast Your Vote</CardTitle>
-            <CardDescription>Select a candidate to cast your vote. Your choice is final and will be recorded.</CardDescription>
+            <CardTitle className="text-3xl text-primary font-headline">
+              Cast Your Vote
+            </CardTitle>
+            <CardDescription>
+              Select a candidate to cast your vote. Your choice is final.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {parties.map((party) => (
-                <Card key={party.name} className="flex items-center justify-between p-4">
+                <Card
+                  key={party.id}
+                  className="flex items-center justify-between p-4"
+                >
                   <div className="flex items-center gap-4">
                     <Avatar>
                       <AvatarFallback>{party.initials}</AvatarFallback>
                     </Avatar>
                     <div>
                       <h3 className="font-semibold text-lg">{party.name}</h3>
-                      <p className="text-sm text-muted-foreground">{party.candidate}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {party.candidate}
+                      </p>
                     </div>
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button disabled={isPending}>
-                        { isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null }
-                        Vote
-                      </Button>
+                      <Button>Vote</Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Confirm Your Vote</AlertDialogTitle>
                         <AlertDialogDescription>
-                          You are about to cast your vote for {party.candidate} ({party.name}). This action is irreversible. Are you sure?
+                          You are about to cast your vote for{" "}
+                          {party.candidate} ({party.name}). This action cannot be
+                          undone. Are you sure you want to proceed?
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleVote(party.name)} disabled={isPending}>
-                          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                          Confirm & Cast Vote
+                        <AlertDialogAction
+                          onClick={() => handleVote(party.id)}
+                        >
+                          Confirm Vote
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

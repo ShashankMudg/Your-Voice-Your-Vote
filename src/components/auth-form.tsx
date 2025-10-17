@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,9 @@ const initialRequestState = {
 };
 
 const initialVerifyState = {
+  success: false,
+  aadhaarHash: "",
+  signature: "",
   serverError: undefined,
 };
 
@@ -28,7 +32,7 @@ function RequestOtpButton() {
       {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
       Send OTP
     </Button>
-  )
+  );
 }
 
 function VerifyOtpButton() {
@@ -38,19 +42,20 @@ function VerifyOtpButton() {
       {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
       Validate
     </Button>
-  )
+  );
 }
-
 
 export default function AuthForm() {
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const [requestState, requestOtpAction] = useFormState(requestOtp, initialRequestState);
   const [verifyState, verifyOtpAction] = useFormState(verifyOtpAndLogin, initialVerifyState);
 
   const aadharFormRef = useRef<HTMLFormElement>(null);
 
+  // Handle OTP request
   useEffect(() => {
     if (requestState?.success && requestState.aadhar) {
       setIsOtpDialogOpen(true);
@@ -68,7 +73,18 @@ export default function AuthForm() {
     }
   }, [requestState, toast]);
 
+  // Handle OTP verification
   useEffect(() => {
+    if (verifyState?.success) {
+      toast({
+        title: "OTP Verified",
+        description: "You are now logged in. Redirecting...",
+      });
+
+      // Redirect with Aadhaar
+      router.push(`/dashboard?aadhar=${requestState.aadhar}`);
+    }
+
     if (verifyState?.serverError) {
       toast({
         title: "Error",
@@ -76,13 +92,12 @@ export default function AuthForm() {
         variant: "destructive",
       });
     }
-  }, [verifyState, toast]);
+  }, [verifyState, toast, router, requestState.aadhar]);
 
   const onDialogClose = () => {
     setIsOtpDialogOpen(false);
     aadharFormRef.current?.reset();
-  }
-
+  };
 
   return (
     <>
@@ -111,7 +126,7 @@ export default function AuthForm() {
         </CardContent>
       </Card>
 
-      <Dialog open={isOtpDialogOpen} onOpenChange={onDialogClose}>
+      <Dialog open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Enter OTP</DialogTitle>
@@ -120,7 +135,7 @@ export default function AuthForm() {
             </DialogDescription>
           </DialogHeader>
           <form action={verifyOtpAction}>
-            <input type="hidden" name="aadhar" value={requestState?.aadhar || ''} />
+            <input type="hidden" name="aadhar" value={requestState?.aadhar || ""} />
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="otp" className="text-right">
@@ -137,7 +152,9 @@ export default function AuthForm() {
               </div>
             </div>
             <DialogFooter>
-                <Button variant="outline" type="button" onClick={onDialogClose}>Cancel</Button>
+              <Button variant="outline" type="button" onClick={onDialogClose}>
+                Cancel
+              </Button>
               <VerifyOtpButton />
             </DialogFooter>
           </form>
