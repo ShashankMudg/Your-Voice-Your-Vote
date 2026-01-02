@@ -130,8 +130,8 @@ The smart contract uses **ECDSA** to verify the signature and ensure:
 | Layer           | Technology                         |
 |-----------------|-----------------------------------|
 | Smart Contracts | Solidity (EVM Compatible)         |
-| Framework       | Hardhat / Foundry                  |
-| Frontend        | React + Ethers.js                  |
+| Framework       | Foundry                  |
+| Frontend        | Next.js                  |
 | Backend         | Node.js (for OTP + signing)        |
 | Wallet          | MetaMask (for voter)               |
 | Tools           | OpenZeppelin ECDSA, Slither, Echidna |
