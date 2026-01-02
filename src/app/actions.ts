@@ -104,7 +104,7 @@ export const verifyOtpAndLogin = async (prevState: any, formData: FormData) => {
 
   // ✅ Aadhaar hash (with salt so raw number isn't exposed)
   const aadhaarHash = keccak256(
-  toUtf8Bytes(aadhar + AADHAAR_SALT)
+    toUtf8Bytes(aadhar + AADHAAR_SALT)
   );
 
 
@@ -116,7 +116,7 @@ export const verifyOtpAndLogin = async (prevState: any, formData: FormData) => {
   const domain = {
     name: "IndiaElection2025",
     version: "1",
-    chainId: parseInt(process.env.CHAIN_ID || "31337"),
+    chainId: parseInt(process.env.CHAIN_ID || "11155111"), // Default to Sepolia
     verifyingContract: process.env.CONTRACT_ADDRESS || "0x0000000000000000000000000000000000000000",
   };
 

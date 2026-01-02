@@ -73,10 +73,61 @@ export default function DashboardPage() {
       // Connect wallet when vote button is clicked
       const provider = new ethers.BrowserProvider(window.ethereum);
       await provider.send("eth_requestAccounts", []);
+
+      // Check network and switch to Sepolia if needed
+      const network = await provider.getNetwork();
+      const SEPOLIA_CHAIN_ID = 11155111n; // 0xaa36a7
+
+      if (network.chainId !== SEPOLIA_CHAIN_ID) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0xaa36a7" }],
+          });
+        } catch (switchError: any) {
+          // This error code indicates that the chain has not been added to MetaMask.
+          if (switchError.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainId: "0xaa36a7",
+                    chainName: "Sepolia Test Network",
+                    nativeCurrency: {
+                      name: "SepoliaETH",
+                      symbol: "ETH",
+                      decimals: 18,
+                    },
+                    rpcUrls: ["https://sepolia.infura.io/v3/"], // Public RPC
+                    blockExplorerUrls: ["https://sepolia.etherscan.io"],
+                  },
+                ],
+              });
+            } catch (addError) {
+              console.error("Failed to add Sepolia:", addError);
+              alert("❌ Failed to add Sepolia network.");
+              return;
+            }
+          } else {
+            console.error("Failed to switch network:", switchError);
+            alert("❌ Please switch to Sepolia network to vote.");
+            return;
+          }
+        }
+        // Re-initialize provider/signer after switch might be needed, but usually handled by current provider instance
+      }
+
       const signer = await provider.getSigner();
 
+      const targetAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || contractAddress;
+      if (targetAddress === "YOUR_CONTRACT_ADDRESS_HERE") {
+        alert("⚠️ Contract address not configured. Please set NEXT_PUBLIC_CONTRACT_ADDRESS.");
+        return;
+      }
+
       // Create contract instance
-      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      const contract = new ethers.Contract(targetAddress, contractABI, signer);
 
       // Send transaction
       const tx = await contract.vote(partyId);
@@ -91,7 +142,7 @@ export default function DashboardPage() {
       router.push("/thank-you");
     } catch (error) {
       console.error(error);
-      alert("❌ Transaction failed (maybe already voted?)");
+      alert("❌ Transaction failed (check console for details)");
     }
   };
 
