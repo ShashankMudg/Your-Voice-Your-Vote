@@ -3,6 +3,7 @@
 export interface Voter {
     aadhar: string;
     name: string;
+    stateId: number;
     hasVoted: boolean;
     votedFor?: string; // Store which party the user voted for
 }
@@ -10,11 +11,11 @@ export interface Voter {
 // In a real application, this would be a database table (e.g., PostgreSQL, MongoDB).
 // We are pre-populating it with some dummy data.
 const voters: Voter[] = [
-    { aadhar: "111122223333", name: "Ramesh Kumar", hasVoted: false },
-    { aadhar: "444455556666", name: "Sita Sharma", hasVoted: true, votedFor: "Indian National Congress" },
-    { aadhar: "777788889999", name: "Amit Singh", hasVoted: false },
-    { aadhar: "123456789012", name: "Priya Patel", hasVoted: false },
-    { aadhar: "112211221122", name: "John Doe", hasVoted: false },
+    { aadhar: "111122223333", name: "Ramesh Kumar", stateId: 1, hasVoted: false },
+    { aadhar: "444455556666", name: "Sita Sharma", stateId: 2, hasVoted: true, votedFor: "Indian National Congress" },
+    { aadhar: "777788889999", name: "Amit Singh", stateId: 1, hasVoted: false },
+    { aadhar: "123456789012", name: "Priya Patel", stateId: 3, hasVoted: false },
+    { aadhar: "112211221122", name: "John Doe", stateId: 2, hasVoted: false },
 ];
 
 /**

@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import {
@@ -27,7 +28,7 @@ import {
 import { ethers } from "ethers";
 
 // ✅ Parties (must match Solidity deployment order)
-const parties = [
+const INITIAL_PARTIES = [
   { id: 0, name: "Bharatiya Janata Party", candidate: "Narendra Modi", initials: "NM" },
   { id: 1, name: "Indian National Congress", candidate: "Rahul Gandhi", initials: "RG" },
   { id: 2, name: "Aam Aadmi Party", candidate: "Arvind Kejriwal", initials: "AK" },
@@ -52,6 +53,25 @@ const contractABI = [
     stateMutability: "view",
     type: "function",
   },
+  // ⚠️ TODO: Update this function name to match your smart contract
+  {
+    inputs: [],
+    name: "getElectionDetails",
+    outputs: [
+      {
+        components: [
+          { name: "id", type: "uint256" },
+          { name: "name", type: "string" },
+          { name: "candidate", type: "string" },
+        ],
+        internalType: "struct Election.Party[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
 // ⚡ Replace with your deployed contract address
@@ -62,25 +82,67 @@ export default function DashboardPage() {
   const searchParams = useSearchParams();
   const aadhar = searchParams.get("aadhar");
 
+  const [parties, setParties] = useState(INITIAL_PARTIES);
+
+  useEffect(() => {
+    const fetchElectionData = async () => {
+      try {
+        if (typeof (window as any).ethereum === "undefined") return;
+        const provider = new ethers.BrowserProvider((window as any).ethereum);
+
+        // Use a public provider or the user's wallet if connected? 
+        // For read-only, we can try to use a default provider if we had an RPC URL, 
+        // but here we'll rely on the browser provider if available.
+
+        const targetAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || contractAddress;
+        if (targetAddress === "YOUR_CONTRACT_ADDRESS_HERE") return;
+
+        const contract = new ethers.Contract(targetAddress, contractABI, provider);
+
+        // ⚠️ Calls the new function
+        const data = await contract.getElectionDetails();
+
+        // Map response to UI format
+        const formattedParties = data.map((p: any) => ({
+          id: Number(p.id),
+          name: p.name,
+          candidate: p.candidate,
+          initials: (p.candidate && typeof p.candidate === 'string')
+            ? p.candidate.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
+            : '??',
+        }));
+
+        if (formattedParties.length > 0) {
+          setParties(formattedParties);
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch election data:", error);
+      }
+    };
+
+    fetchElectionData();
+  }, []);
+
   // ✅ Voting logic
   const handleVote = async (partyId: number) => {
     try {
-      if (typeof window.ethereum === "undefined") {
+      if (typeof (window as any).ethereum === "undefined") {
         alert("❌ Please install MetaMask!");
         return;
       }
 
       // Connect wallet when vote button is clicked
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new ethers.BrowserProvider((window as any).ethereum);
       await provider.send("eth_requestAccounts", []);
 
       // Check network and switch to Sepolia if needed
       const network = await provider.getNetwork();
-      const SEPOLIA_CHAIN_ID = 11155111n; // 0xaa36a7
+      const SEPOLIA_CHAIN_ID = BigInt(11155111); // 0xaa36a7
 
       if (network.chainId !== SEPOLIA_CHAIN_ID) {
         try {
-          await window.ethereum.request({
+          await (window as any).ethereum.request({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: "0xaa36a7" }],
           });
@@ -88,7 +150,7 @@ export default function DashboardPage() {
           // This error code indicates that the chain has not been added to MetaMask.
           if (switchError.code === 4902) {
             try {
-              await window.ethereum.request({
+              await (window as any).ethereum.request({
                 method: "wallet_addEthereumChain",
                 params: [
                   {

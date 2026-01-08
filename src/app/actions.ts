@@ -102,6 +102,13 @@ export const verifyOtpAndLogin = async (prevState: any, formData: FormData) => {
     return { serverError: "Wrong OTP entered. Please try again." };
   }
 
+  // ✅ Fetch voter to get stateId
+  const voter = await getVoterByAadhar(aadhar);
+  if (!voter) {
+    return { serverError: "Voter not found." };
+  }
+  const stateId = voter.stateId;
+
   // ✅ Aadhaar hash (with salt so raw number isn't exposed)
   const aadhaarHash = keccak256(
     toUtf8Bytes(aadhar + AADHAAR_SALT)
@@ -124,11 +131,12 @@ export const verifyOtpAndLogin = async (prevState: any, formData: FormData) => {
     Vote: [
       { name: "aadhaarHash", type: "bytes32" },
       { name: "electionId", type: "uint256" },
+      { name: "stateId", type: "uint256" },
       { name: "expiry", type: "uint256" },
     ],
   };
 
-  const value = { aadhaarHash, electionId, expiry };
+  const value = { aadhaarHash, electionId, stateId, expiry };
 
   // ✅ Sign with EC private key
   const signature = await ecWallet.signTypedData(domain, types, value);
@@ -138,6 +146,7 @@ export const verifyOtpAndLogin = async (prevState: any, formData: FormData) => {
     success: true,
     aadhaarHash,
     electionId,
+    stateId,
     expiry,
     signature,
   };
